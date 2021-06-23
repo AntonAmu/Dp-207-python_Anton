@@ -1,5 +1,6 @@
 from functools import reduce
 import json
+from pathlib import Path
 
 class CustomException(Exception):
     def __init__(self, msg):
@@ -23,6 +24,11 @@ def some_math(num_1, num_2):
 
 
 class Approach():
+    
+    @classmethod
+    @property
+    def list_of_approach(cls):
+        return dict(zip([sub_class.title for sub_class in cls.__subclasses__()],[sub_class for sub_class in cls.__subclasses__()]))
 
     @staticmethod
     def sum_(str):
@@ -37,6 +43,8 @@ class Approach():
         if cls.sum_(str_1) == cls.sum_(str_2):
 
             return True
+        else:
+            return False
     
     @staticmethod
     def creat_parts_of_comparison(str):
@@ -68,16 +76,31 @@ class SerieOfTickets():
 
     tickets = {}
     id = 1
-    aproach = None
+    approach = None
     num_len = None
     
+    @classmethod
+    def set_approach(cls, name, class_approach = Approach):
+        if name in  class_approach.list_of_approach:
+            cls.approach = class_approach.list_of_approach[name]
 
+    @classmethod
+    def set_approach_from_file(cls, file):
+        check_file_exists(file)
+        with open(file) as f:
+            for line in f:
+                if line.find('Moskow') != -1:
+                    cls.set_approach('Moskow')
+                elif line.find('Piter') != -1:
+                    cls.set_approach('Piter')
+                else:
+                    raise CanNotFindApproachException("We can't find approach witch we know")
     
     @classmethod
     def reset(cls):
         cls.tickets = {}
         cls.id = 1  
-        cls.aproach = None
+        cls.approach = None
         num_len = None  
     
     @classmethod
@@ -98,17 +121,6 @@ class SerieOfTickets():
     @classmethod
     def increment_id(cls):
         cls.id +=1
-    
-    @classmethod
-    def set_approach_from_file(cls, file):
-        with open(file) as f:
-            for line in f:
-                if line.find('Moskow') != -1:
-                    cls.aproach = MoskowApproach
-                elif line.find('Piter') != -1:
-                    cls.aproach = PiterApproach
-                else:
-                    raise CanNotFindApproachException("We can't find aproach witch we know")
     
     @classmethod
     def set_num_len(cls, num):
@@ -135,7 +147,7 @@ class SerieOfTickets():
         count = 0
         for ticket in cls.tickets:
             #str_ = f"{num:06}"
-            if cls.aproach.is_lucky_number(cls.tickets.get(ticket)):
+            if cls.approach.is_lucky_number(cls.tickets.get(ticket)):
                 count += 1
         return count
 
@@ -150,32 +162,60 @@ class SerieOfTickets():
         return {"id": self.id, "number": self.number}
     
 
+def main():
+    try:
+        import argparse
+        parser = argparse.ArgumentParser()
+        parser.add_argument('file', type=check_file_exists)
+        args =  parser.parse_args()
+        SerieOfTickets.set_num_len(6)
+        SerieOfTickets.set_approach_from_file(args.file)
+        print(SerieOfTickets.total_amount_of_lucky_tickets)
+    except FileExistsError:
+        print("Such file doesn't exists")
 
+
+def check_file_exists(path):
+    """
+    Check if path exists and if path is file
+    """
+    path = Path(r"" + path)
+    if not path.exists():
+        raise FileExistsError("Such file doesn't exists")
+    elif not path.is_file():
+        raise FileExistsError("Such file doesn't exists")
+    return path
 
 if __name__ == "__main__":
     try:
-        # print(main())
-        # print(find_number_of_ticket(6, 27))
-        SerieOfTickets.set_num_len(6)
-        ticket1 = SerieOfTickets('999999')
-        ticket2 = SerieOfTickets('888888')
-        ticket3 = SerieOfTickets('456789')
-        SerieOfTickets.set_approach_from_file('approach.txt')
-        print(SerieOfTickets.count_lucky_tickets())
-        print('*'*90)
-        print(ticket1.id)
-        print(SerieOfTickets.id)
-        print(SerieOfTickets.tickets)
-        print(SerieOfTickets.total_amount_of_lucky_tickets)
-        print(ticket2.id)
-        print(ticket1.aproach)
-        SerieOfTickets.create_tickets_from_file('tickets.json')
-        SerieOfTickets.set_approach_from_file('approach.txt')
-        print('*'*90)
-        print(SerieOfTickets.tickets)
-        print(SerieOfTickets.count_lucky_tickets())
-        print(SerieOfTickets.aproach.is_lucky_number('234162'))
-    except CustomException as e:
-        print(e.msg)
-    finally:
-        pass
+        main()
+        # SerieOfTickets.set_num_len(6)
+        # ticket1 = SerieOfTickets('026466')
+        # ticket2 = SerieOfTickets('888888')
+        # ticket3 = SerieOfTickets('456789')
+        # SerieOfTickets.set_approach_from_file('approach.txt')
+        # print(SerieOfTickets.count_lucky_tickets())
+        # print('*'*90)
+        # print(ticket1.id)
+        # print(SerieOfTickets.id)
+        # print(SerieOfTickets.tickets)
+        # print(SerieOfTickets.total_amount_of_lucky_tickets)
+        # print(ticket2.id)
+        # print(ticket1.approach)
+        # SerieOfTickets.create_tickets_from_file('tickets.json')
+        # SerieOfTickets.set_approach_from_file('approach.txt')
+        # print('*'*90)
+        # print(SerieOfTickets.tickets)
+        # print(SerieOfTickets.count_lucky_tickets())
+        # print(SerieOfTickets.approach.is_lucky_number('234162'))
+        # print(Approach.list_of_approach)
+        # SerieOfTickets.set_approach('Moskow')
+        # print('*'*90)
+        # print(SerieOfTickets.approach)
+        # print(SerieOfTickets.tickets)
+        # print(SerieOfTickets.count_lucky_tickets())
+    except (CustomException, FileExistsError) as e:
+        if getattr(e, 'msg', None):
+            print(e.msg)
+        else:
+            print("Such file doesn't exists")
