@@ -1,18 +1,30 @@
 import math
+#Формула Бине
 
-class NotExistException(Exception):
+class CustomException(Exception):
     def __init__(self, msg):
         self.msg = msg
 
 
-class Range():
+class NotExistException(CustomException):
+    pass
+
+class NotPositiveRange(CustomException):
+    pass
+
+class PositiveRange():
 
     def __init__(self, begin, end):
         self.begin = begin
         self.end = end
+        self.validate_positiv()
     
     def get_fibbonachi_range(self):
         return FibbonachiRange(self.begin, self.end).find_proper_fibbonachi_range()
+
+    def validate_positiv(self):
+        if self.end <= self.begin:
+            raise NotPositiveRange("Not positive range")
 
 
 class FibbonachiRange():
@@ -71,13 +83,22 @@ class NegativeStartNegativeEndRange(FibbonachiRange):
         raise NotExistException("There are no digits for such range")
 
 def main():
-    for r in Range(-100, 500), Range(0, 23), Range(142, 234), Range(-150, -100):
-        print(list(r.get_fibbonachi_range()))
-
+    try:
+        for r in PositiveRange(-100, 500), PositiveRange(22, 30), PositiveRange(1, 100), PositiveRange(-150, -100):
+            try:
+                print(list(r.get_fibbonachi_range()))
+                #print(list(r.get_fibbonachi_range())[-1])
+            except CustomException as e:
+                print(e.msg)
+                continue
+    except CustomException as e:
+            print(e.msg)
+    except IndexError:
+        pass
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except NotExistException as e:
-        print(e.msg)
+
+    main()
+
+        
