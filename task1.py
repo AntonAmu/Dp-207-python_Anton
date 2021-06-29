@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 class ChessDesk():
     """Create chessdesk appropriate height and width.
@@ -11,7 +12,7 @@ class ChessDesk():
         """"Return chessdesk representation"""
         even_row = '* '*self.width
         odd_row = ' *'*self.width
-        view = '\n'.join([odd_row if i%2!=0 else even_row for i in range(self.height)]) 
+        view = '\n'.join([odd_row if i%2!=0 else even_row.strip() for i in range(self.height)]) 
         return view
 
    
@@ -23,14 +24,16 @@ def validation(value):
         raise ValueError(f"Invalid negative int {ivalue}")
     return ivalue
 
-if __name__ == "__main__":
-    try:
+def parse_arg(args):
         parser = argparse.ArgumentParser()
         parser.add_argument('width', type=validation)
         parser.add_argument('height', type=validation)
-        args =  parser.parse_args()
-        print(ChessDesk(**args.__dict__))
-    except SystemExit:
-        print('2')
+        return parser.parse_args(args)
 
-  
+def main():
+    args = parse_arg(sys.argv[1:])
+    print(ChessDesk(**args.__dict__))
+
+
+if __name__ == "__main__":
+    main()

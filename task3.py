@@ -1,15 +1,29 @@
+class CustomException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
-class TryAddExistTriangleException(Exception):
+class TryAddExistTriangleException(CustomException):
     pass
-class TriangleNotExistException(Exception):
+class NotValidinstanceOfTriangleException(CustomException):
     pass
-class ValidationException(Exception):
+class ValidationException(CustomException):
     pass
 
+class ListOfTriangles(list):
+    
+    def __init__(self):
+        self.list = []
+    
+    def append(self, instance):
+        if isinstance(instance, Triangle) and instance.name not in (triangle.name for triangle in self.list):
+            self.list.append(instance)
+        else:
+            raise TryAddExistTriangleException('You are trying to add triangle with existed name!')
+    
 
+
+    
 class Triangle():
-
-    list_of_triangles = {}
 
     def __init__(self, name, side_1, side_2, side_3):
         self.side_1 = side_1
@@ -17,145 +31,106 @@ class Triangle():
         self.side_3 = side_3
         self.name = name
         Triangle.validate_data(self)
-        Triangle.is_exist(self)
-        Triangle.add_instance(self)
+        Triangle.check_area(self)
+    
     @property
     def area(self):
         p = (self.side_1 + self.side_2 + self.side_3)*.5
         area = (p*(p - self.side_1)*(p - self.side_2)*(p - self.side_3))**.5
         return area
     
-    @classmethod
-    def add_instance(cls, instance):
-        if cls.list_of_triangles.get(instance.name):
-            raise TryAddExistTriangleException()    
-        else:
-            cls.list_of_triangles[instance.name] = instance.area
-    
-    @classmethod
-    def reset(cls):
-        cls.list_of_triangles = {}
-    
-    @classmethod
-    def ordered_list(cls):
-        ordered_list_of_triangles = sorted(list(cls.list_of_triangles.items()), key = lambda item: item[1])
-        return ordered_list_of_triangles
-    
-    @classmethod
-    def is_exist(cls, instance):
+    @staticmethod
+    def check_area(instance):
         if not isinstance(instance.area, complex):
             if instance.side_1 <=0 or instance.side_2 <= 0 or instance.side_3 <= 0 or instance.area <= 0:
-                raise TriangleNotExistException()
+                raise NotValidinstanceOfTriangleException('Negative area or side of triangle')
         else:
-            raise TriangleNotExistException()
+            raise NotValidinstanceOfTriangleException('Negative area or side of triangle')
 
     @classmethod
     def validate_data(cls, instance):
-        v =  Validator()
         for attr in instance.__dict__:
             if attr == 'name':
-                instance.__dict__[attr] = v.validate_to_string(instance.__dict__[attr])
+                instance.__dict__[attr] = instance.__dict__[attr].strip()
             else:
-                instance.__dict__[attr] = v.validate_to_number(instance.__dict__[attr])
+                instance.__dict__[attr] = validate_to_number(instance.__dict__[attr])
 
+    def __lt__(self, other):
+        if self.area < other.area:
+            return True
+        else:
+            return False
+        
+    def __gt__(self, other):
+        if self.area > other.area:
+            return True
+        else:
+            return False
 
-class Validator():
-
-    def validate_to_number(self, value):
-        value = value.strip()
+def validate_to_number(value):
+    value = value.strip()
+    try:
+        value = int(value)
+    except ValueError:
         try:
-            value = int(value)
+            value = float(value)
         except ValueError:
-            try:
-                value = float(value)
-            except ValueError:
-                raise ValidationException()
-            else:
-                return value
+            raise ValidationException("Not valid data in entering sides")
         else:
             return value
-
-    def validate_to_string(self, value):
-        value = value.strip()
+    else:
         return value
-        
 
+def answer_choise(question):
+    answer = input(f"{question} [y/n][Yes/No]").lower()
+    if answer == 'n' or answer == 'no':
+        return False
+    elif answer == 'y' or answer == 'yes':
+        return True
+    else:
+        print("We couldn't understand you")
+        return answer_choise(question)
 
-
-if __name__ == "__main__":
-    while True:
+def create_triangle_from_input():
+    try:
         name = input("Enter the name of triangle:")
         side_1 = input("Enter the first side of triangle:")
         side_2 = input("Enter the second side of triangle:")
         side_3 = input("Enter the third side of triangle:")
-        while True:
-            try:
-                Triangle(name, side_1, side_2, side_3)
-            except TryAddExistTriangleException:
-                print("You are trying to add triangle with existed name!")
-                answer = input("Do you want to change name? [y/n][Yes/No]").lower()
-                if answer == 'y' or answer == 'yes':
-                    name = input("Enter the name of triangle:")
-                else:
-                    break
-            except TriangleNotExistException:
-                print("Such triangle doesn't exists")
-                break
-            except ValidationException:
-                print("Not valid data in entering sides")
-                break
-            else:
-                break
-        answer = input("Do you want to add triangle? [y/n][Yes/No]").lower()
-        if answer == 'n' or answer == 'no':
-            output = '===== Triangles list:======\n'
-            for  index, triangle in enumerate(Triangle.ordered_list()):
-                output += f"{index}. [Triangle {triangle[0]}]: {round(triangle[1], 2)} cm\n"
-            print(output)
-            print("By my friend!")
-            break
+        return Triangle(name, side_1, side_2, side_3)
+    except CustomException as e:
+        print(e.msg)
+        if answer_choise('Try again?'):
+            return create_triangle_from_input()
+
+def add_to_list(triangle, list_of_triangles):
+    try:
+        list_of_triangles.append(triangle)
+    except CustomException as e:
+        print(e.msg)
+        if choise('Do you want to change name?'):
+            name = input("Enter the name of triangle:")
+            triangle.name = name
+            return add_to_list(triangle, list_of_triangles)
+
+def create_and_add(list_of_triangles):
+    tr = create_triangle_from_input()
+    add_to_list(tr, list_of_triangles)
+
+
+def main():
+    list_of_triangles = ListOfTriangles()
+    want_to_add = True
+    while want_to_add:
+        create_and_add(list_of_triangles)
+        want_to_add = answer_choise('Do you want to add triangle?')
+    else:
+        output = '===== Triangles list:======\n'
+        for  index, triangle in enumerate(sorted(list_of_triangles.list)):
+            output += f"{index+1}. [Triangle {triangle.name}]: {round(triangle.area)} cm\n"
+        print(output)
+
+
+if __name__ == "__main__":
+    main()
    
-
-
-
-
-
-"""
-    Triangle.reset()
-    while True:
-        while True:
-            try:
-                name = Validator.validate_to_string(input("Enter the name of triangle:"))
-                side_1 =  Validator.validate_to_number(input("Enter the first side of triangle:"))
-                side_2 =  Validator.validate_to_number(input("Enter the second side of triangle:"))
-                side_3 =  Validator.validate_to_number(input("Enter the third side of triangle:"))
-            except ValidationExcepton:
-                print("Not valid data in entering sides")
-                break
-            else:
-                while True:
-                    try:
-                        Triangle(name, side_1, side_2, side_3)
-                    except TryAddExistTriangleExcepton:
-                        print("You are trying to add triangle with existed name!")
-                        answer = input("Do you want to change name? [y/n][Yes/No]").lower()
-                        if answer == 'y' or answer == 'yes':
-                            name = input("Enter the name of triangle:")
-                        else:
-                            break
-                    except TriangleNotExistExcepton:
-                        print("Such triangle doesn't exists")
-                        break
-                    else:
-                        break
-            finally:
-                break
-        answer = input("Do you want to add triangle? [y/n][Yes/No]").lower()
-        if answer == 'n' or answer == 'no':
-            output = '===== Triangles list:======\n'
-            for  index, triangle in enumerate(Triangle.ordered_list()):
-                output += f"{index}. [Triangle {triangle[0]}]: {triangle[1]} cm\n"
-            print(output)
-            print("By my friend!")
-            break
-""" 
