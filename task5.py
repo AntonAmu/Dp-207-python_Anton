@@ -215,7 +215,7 @@ def main():
         try:
             print(Number('-22'))
             print(Number('2'))
-            print(Number('40'))
+            print(Number('33'))
             print(Number('44'))
             print(Number('66'))
             print(Number('106'))

@@ -59,17 +59,17 @@ class FileParser():
         return path
 
 
-        
 
-
-if __name__ == "__main__":
-
-    try:
+def parse_arg(args):
         parser = argparse.ArgumentParser()
         parser.add_argument('file', type = FileParser.check_file_exists)
         parser.add_argument('string_to_find')
         parser.add_argument('-r', '--string_to_replace')
-        args =  parser.parse_args()
+        return parser.parse_args(args)    
+
+def main():
+    args = parse_arg(sys.argv[1:])
+    try:
         if args.string_to_replace:
             logging.info(FileParser(**args.__dict__).replace_str())
         else:
@@ -77,4 +77,9 @@ if __name__ == "__main__":
     except FileExistsError as e:
         logging.error("Such file doesn't exists")
         print("Such file doesn't exists")
+        
+
+
+if __name__ == "__main__":
+    main()
         

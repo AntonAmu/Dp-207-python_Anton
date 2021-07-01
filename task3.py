@@ -15,13 +15,16 @@ class ListOfTriangles(list):
         self.list = []
     
     def append(self, instance):
-        if isinstance(instance, Triangle) and instance.name not in (triangle.name for triangle in self.list):
+        if instance.name not in (triangle.name for triangle in self.list):
             self.list.append(instance)
         else:
             raise TryAddExistTriangleException('You are trying to add triangle with existed name!')
     
-
-
+    def __str__(self):
+        output = '===== Triangles list:======\n'
+        for  index, triangle in enumerate(sorted(self.list)):
+            output += f"{index+1}. [Triangle {triangle.name}]: {round(triangle.area)} cm\n"
+        return output
     
 class Triangle():
 
@@ -31,7 +34,7 @@ class Triangle():
         self.side_3 = side_3
         self.name = name
         Triangle.validate_data(self)
-        Triangle.check_area(self)
+        self.check_area()
     
     @property
     def area(self):
@@ -39,10 +42,10 @@ class Triangle():
         area = (p*(p - self.side_1)*(p - self.side_2)*(p - self.side_3))**.5
         return area
     
-    @staticmethod
-    def check_area(instance):
-        if not isinstance(instance.area, complex):
-            if instance.side_1 <=0 or instance.side_2 <= 0 or instance.side_3 <= 0 or instance.area <= 0:
+
+    def check_area(self):
+        if not isinstance(self.area, complex):
+            if self.side_1 <=0 or self.side_2 <= 0 or self.side_3 <= 0 or self.area <= 0:
                 raise NotValidinstanceOfTriangleException('Negative area or side of triangle')
         else:
             raise NotValidinstanceOfTriangleException('Negative area or side of triangle')
@@ -98,24 +101,26 @@ def create_triangle_from_input():
         side_2 = input("Enter the second side of triangle:")
         side_3 = input("Enter the third side of triangle:")
         return Triangle(name, side_1, side_2, side_3)
-    except CustomException as e:
+    except ValidationException as e:
         print(e.msg)
         if answer_choise('Try again?'):
             return create_triangle_from_input()
+        return
 
 def add_to_list(triangle, list_of_triangles):
     try:
         list_of_triangles.append(triangle)
     except CustomException as e:
         print(e.msg)
-        if choise('Do you want to change name?'):
+        if answer_choise('Do you want to change name?'):
             name = input("Enter the name of triangle:")
             triangle.name = name
             return add_to_list(triangle, list_of_triangles)
 
 def create_and_add(list_of_triangles):
     tr = create_triangle_from_input()
-    add_to_list(tr, list_of_triangles)
+    if tr: 
+        add_to_list(tr, list_of_triangles)
 
 
 def main():
@@ -125,10 +130,7 @@ def main():
         create_and_add(list_of_triangles)
         want_to_add = answer_choise('Do you want to add triangle?')
     else:
-        output = '===== Triangles list:======\n'
-        for  index, triangle in enumerate(sorted(list_of_triangles.list)):
-            output += f"{index+1}. [Triangle {triangle.name}]: {round(triangle.area)} cm\n"
-        print(output)
+        print(list_of_triangles)
 
 
 if __name__ == "__main__":
