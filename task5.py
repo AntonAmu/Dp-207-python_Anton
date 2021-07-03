@@ -125,19 +125,26 @@ class RepresentNumberFrom_1_To_99(RepresentNumberRu):
     
     @classmethod
     def str(cls, number):
-
         dict_ = cls._numbers
 
         if len(number) <= 2 and dict_.get(int(number)):
             string= dict_.get(int(number))
-        elif int(number) < 40:
+        elif number == '00':
+            string = ''
+        elif int(number) < 40 and number[1] == '0':
+            string = f'{dict_.get(int(number[0]))}дцать'
+        elif int(number) < 40 and number[1] != '0':
             string = f'{dict_.get(int(number[0]))}дцать {dict_.get(int(number[1]))}'
         elif len(number) == 2 and int(number[0]) == 4:
             string = f'{dict_.get(40)} {dict_.get(int(number[1]))}'
-        elif len(number) == 2 and int(number) > 49 and  int(number) < 89:
-            string = f'{dict_.get(int(number[0]))}десят {dict_.get(int(number[1]))}'
+        elif int(number) > 49 and  int(number) < 89 and int(number[1]) == 0:
+            string = f'{dict_.get(int(number[0]))}десят'
         elif len(number) == 2 and int(number[0]) == 9:
             string = f'{dict_.get(90)} {dict_.get(int(number[1]))}'
+        elif int(number) == 90:
+            string = f'{dict_.get(90)}'
+        else:
+            string = f'{dict_.get(int(number[0]))}десят {dict_.get(int(number[1]))}'
         return string
     
     @classmethod
@@ -154,16 +161,16 @@ class RepresentNumberFrom_100_To_999(RepresentNumberFrom_1_To_99):
     @classmethod
     def str(cls, number):
         dict_ = cls._numbers 
-
-
         if int(number) in dict_:
             string = f'{dict_.get(int(number))}'
-        elif int(number) in range(100, 501):
-            string = f"{RepresentNumberFrom_100_To_999.str(int(number) - int(number[1:]))} {RepresentNumberFrom_1_To_99.str(number[1:])}"
+        elif len(number) == 3 and int(number) == 0:
+            string = ''
+        elif int(number) in range(100, 500):
+            string = f"{RepresentNumberFrom_100_To_999.str(str(int(number) - int(number[1:])))} {RepresentNumberFrom_1_To_99.str(number[1:])}"
         elif int(number[:1]) == 0:
-            string = f'{RepresentNumberFrom_1_To_99.str(number[2])}'
+            string = f'{RepresentNumberFrom_1_To_99.str(number[1:])}'
         else:
-            string = f'{RepresentNumberFrom_1_To_99.str(number[0])}сот { RepresentNumberFrom_1_To_99.str(number[1:])}'
+            string = f'{RepresentNumberFrom_1_To_99.str(number[0])}сот {RepresentNumberFrom_1_To_99.str(number[1:])}'
         return string
 
 class RepresentNumberFrom_1000_To_9_999(RepresentNumberFrom_100_To_999):
@@ -173,15 +180,17 @@ class RepresentNumberFrom_1000_To_9_999(RepresentNumberFrom_100_To_999):
     @classmethod
     def str(cls, number):
 
-        dict_ = cls._numbers 
-        if int(number) == 1000:
+        dict_ = cls._numbers
+        if  number[0] == '0':
+            string= f"тысячь {RepresentNumberFrom_100_To_999.str(number[1:])}"
+        elif int(number) == 1000:
             string = f'{dict_.get(int(number))} тысяча'
         elif int(number) - int(number[1:]) == 1000:
-            string = f"{RepresentNumberFrom_1000_To_9_999.str(int(number) - int(number[1:]))} {RepresentNumberFrom_100_To_999.str(number[1:])}"
+            string = f"{RepresentNumberFrom_1000_To_9_999.str(str(int(number) - int(number[1:])))} {RepresentNumberFrom_100_To_999.str(number[1:])}"
         elif int(number) - int(number[1:]) in dict_:    
-            string = f"{RepresentNumberFrom_1000_To_9_999.str(int(number) - int(number[1:]))} тысячи {RepresentNumberFrom_100_To_999.str(number[1:])}"
+            string = f"{dict_.get(int(number) - int(number[1:]))} тысячи {RepresentNumberFrom_100_To_999.str(number[1:])}"
         else:
-            string= f"{RepresentNumberFrom_1_To_99.str(number[1])} тысячь " + RepresentNumberFrom_100_To_999.str(number[1:])
+            string= f"{RepresentNumberFrom_1_To_99.str(number[:1])} тысячь {RepresentNumberFrom_100_To_999.str(number[1:])}" 
         return string
 
 class RepresentNumberFrom_10_000_To_99_999(RepresentNumberFrom_1000_To_9_999):
@@ -190,9 +199,13 @@ class RepresentNumberFrom_10_000_To_99_999(RepresentNumberFrom_1000_To_9_999):
     
     @classmethod
     def str(cls, number):
-
-        string = f"{RepresentNumberFrom_1_To_99.str(number[:-3]).split()[0]} {RepresentNumberFrom_1000_To_9_999.str(number[-4:])} " 
-
+        if number[0] == '0':
+            string = f"{RepresentNumberFrom_1000_To_9_999.str(number[1:])}"
+        elif int(number[:2]) in range(11,20) or number[1] == '0':
+            string = f"{RepresentNumberFrom_1_To_99.str(number[:-3]).split()[0]} тысячь {RepresentNumberFrom_100_To_999.str(number[-3:])}"
+        else:
+            string = f"{RepresentNumberFrom_1_To_99.str(number[:-3]).split()[0]} {RepresentNumberFrom_1000_To_9_999.str(number[-4:])} " 
+     
         return string
     
 class RepresentNumberFrom_100_000_To_999_999(RepresentNumberFrom_10_000_To_99_999):
@@ -201,9 +214,7 @@ class RepresentNumberFrom_100_000_To_999_999(RepresentNumberFrom_10_000_To_99_99
 
     @classmethod
     def str(cls, number):
-
-        string = f"{RepresentNumberFrom_100_To_999.str(number[:-3]).split()[0]} {RepresentNumberFrom_10_000_To_99_999.str(number[1:])} " 
-
+        string = f"{RepresentNumberFrom_100_To_999.str(number[:-3]).split()[0]} {RepresentNumberFrom_10_000_To_99_999.str(number[1:])}" 
         return string
         
 def main():
@@ -213,18 +224,18 @@ def main():
     for lang in edit_lang:
         Number.selector = Selector(lang)
         try:
-            print(Number('-22'))
-            print(Number('2'))
-            print(Number('33'))
-            print(Number('44'))
-            print(Number('66'))
-            print(Number('106'))
-            print(Number('222'))
-            print(Number('242'))
-            print(Number('401'))
-            print(Number('99101'))
-            print(Number('441101'))
-            print(Number('9999999'))
+            # print(Number('-22'))
+            # print(Number('2'))
+            # print(Number('33'))
+            # print(Number('44'))
+            # print(Number('66'))
+            # print(Number('106'))
+            # print(Number('222'))
+            # print(Number('242'))
+            # print(Number('401'))
+            print(Number('100330'))
+            print(Number('123356'))
+            print(Number('90000'))
         except (TooManyHope, NotValiData) as e:
             logging.error(e.msg)
 

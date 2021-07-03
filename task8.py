@@ -17,12 +17,12 @@ class PositiveRange():
     def __init__(self, begin, end):
         self.begin = begin
         self.end = end
-        self.validate_positiv()
+        self.check_if_positiv()
     
     def get_fibbonachi_range(self):
         return FibbonachiRange(self.begin, self.end).find_proper_fibbonachi_range()
 
-    def validate_positiv(self):
+    def check_if_positiv(self):
         if self.end <= self.begin:
             raise NotPositiveRange("Not positive range")
 
@@ -32,55 +32,31 @@ class FibbonachiRange():
     def __init__(self, begin, end):
         self.range_begin = begin
         self.range_end = end
-        self.range_ = (self.range_begin > 0, self.range_end > 0)
     
     @staticmethod
-    def find_index_through_value(value): 
-        
-        index = math.log10(value*(5**0.5))/math.log10((1+5**0.5)/2)
-        if index - round(index) > 0:
-            return round(index) + 1 
-        else:
-            return round(index) 
+    def find_index_through_value(value):
+        if value <= 0:
+            return 0
+        else: 
+            index = math.log10(value*(5**0.5))/math.log10((1+5**0.5)/2)
+            if index - round(index) > 0:
+                return round(index) + 1 
+            else:
+                return round(index) 
         
 
     def find_proper_fibbonachi_range(self):
-        for sub_class in self.__class__.__subclasses__():
-            if sub_class.range_ == self.range_:
-                return sub_class.generate_fibbonachi_range(self.range_begin, self.range_end)
-
-
-class NegativeStartPositiveEndRange(FibbonachiRange):
-    start = False
-    end = True
-    range_ = (start, end)
-    
-    @classmethod
-    def generate_fibbonachi_range(cls, range_begin, range_end):
-        index_begin = 0
-        index_end = cls.find_index_through_value(range_end)
-        return (round((((1+5**.5)/2)**i)/(5**0.5)) for i in range(index_begin, index_end))
-
-
-class PositiveStartPositiveEndRange(FibbonachiRange):
-    start = True
-    end = True
-    range_ = (start, end)
-    
-    @classmethod
-    def generate_fibbonachi_range(cls, range_begin, range_end):
-        index_begin = cls.find_index_through_value(range_begin)
-        index_end = cls.find_index_through_value(range_end)
-        return (round((((1+5**.5)/2)**i)/(5**0.5)) for i in range(index_begin, index_end))
-
-class NegativeStartNegativeEndRange(FibbonachiRange):
-    start = False
-    end = False
-    range_ = (start, end)
+        index_begin = self.__class__.find_index_through_value(self.range_begin)
+        index_end = self.__class__.find_index_through_value(self.range_end)
+        if index_begin == 0 and index_end == 0:
+            raise NotExistException("There are no digits for such range")
+        else:
+            return self.__class__.fibbonachi_range(index_begin, index_end)
     
     @staticmethod
-    def generate_fibbonachi_range(range_begin, range_end):
-        raise NotExistException("There are no digits for such range")
+    def fibbonachi_range(index_begin, index_end):
+        return (round((((1+5**.5)/2)**i)/(5**0.5)) for i in range(index_begin, index_end))
+
 
 def main():
     try:
