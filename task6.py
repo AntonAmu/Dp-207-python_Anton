@@ -234,7 +234,7 @@ if __name__ == "__main__":
         print(Ticket.id)
         # print(serie.approach)
         # print('*'*90)
-        serie.set_approach('Moskow')
+        # serie.set_approach('Moskow')
         # print(serie.approach)
         # print(serie.tickets)
         # print(serie.count_lucky_tickets())
@@ -242,7 +242,7 @@ if __name__ == "__main__":
         # print(serie.tickets)
         # print(serie.approach.is_lucky_number('234162'))
         # print(serie.count_lucky_tickets())
-        print(serie.approach.total_amount_of_lucky_tickets(serie))
+        # print(serie.approach.total_amount_of_lucky_tickets(serie))
     except (CustomException, FileExistsError) as e:
         if getattr(e, 'msg', None):
             print(e.msg)

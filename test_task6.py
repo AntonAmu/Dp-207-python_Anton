@@ -1,9 +1,6 @@
 from task6 import *
 import pytest
-from pytest_mock import mocker
-import sys
-from io import StringIO
-from unittest import mock
+
 
 
 @pytest.fixture()
