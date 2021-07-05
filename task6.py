@@ -27,7 +27,9 @@ def some_math(num_1, num_2):
 
 
 class Approach():
-    
+    """
+    Class Approach
+    """    
     @classmethod
     @property
     def list_of_approach(cls):
@@ -35,12 +37,17 @@ class Approach():
 
     @staticmethod
     def sum_(str):
+        """
+        Return sum of string's chars 
+        """   
         sum_ = reduce((lambda total, char: total + int(char)), list(str), 0)
         return sum_
 
     @classmethod
     def is_lucky_number(cls, str):     
-        
+        """
+        Return if the ticket's number is lucky or not 
+        """  
         str_1, str_2 = cls.creat_parts_of_comparison(str)
 
         if cls.sum_(str_1) == cls.sum_(str_2):
@@ -59,13 +66,20 @@ class MoskowApproach(Approach):
     title = 'Moskow'
     
     @staticmethod
-    def creat_parts_of_comparison(str_):         
-        str_1 = str_[:3]
-        str_2 = str_[3:]
+    def creat_parts_of_comparison(str_):
+        """
+        Divided  ticket's number into two halfs.  
+        """          
+        str_1 = str_[:int(len(str_)/2)]
+        str_2 = str_[int(len(str_)/2):]
         return str_1, str_2
 
     @staticmethod
     def total_amount_of_lucky_tickets(instance_serie, m = 10):
+        """
+        Calculates total amount of lucky tickets for the full range of ticket's numbers
+        according to their number of digets
+        """  
         if instance_serie.num_len%2 == 0 and instance_serie.num_len >= 2:
             smth = some_math
             sum_ = 0.5*instance_serie.num_len*range(m-1).stop
@@ -84,13 +98,21 @@ class PiterApproach(Approach):
 
     @staticmethod
     def creat_parts_of_comparison(str_):
-
+        """
+        Divided  ticket's number into two parts:
+        first part - even numbers fron string chars 
+        second part - odd numbers fron string chars   
+        """    
         str_1 = ''.join(char for char in str_ if int(char)%2 == 0)
         str_2 = ''.join(char for char in str_ if int(char)%2 != 0)
         return str_1, str_2
     
     @staticmethod
     def total_amount_of_lucky_tickets(instance_serie, m = 10):
+        """
+        Calculates total amount of lucky tickets for the full range of ticket's numbers
+        according to their number of digets
+        """  
         if instance_serie.num_len >= 2:
             count = 0
             for ticket in range(10**(instance_serie.num_len)):
@@ -100,7 +122,9 @@ class PiterApproach(Approach):
         return 0
 
 class Ticket():
-    
+    """
+    Class ticket 
+    """    
     id = 1
 
     def __init__(self, number, num_len=6, id = None):
@@ -119,6 +143,11 @@ class Ticket():
         cls.id = 1
 
     def validate_number(self, number):
+        """
+        Checks if data is string of integers. If data is integer type
+        return str(integer) if the number of digits greater or equal attribute length of number else 
+        null will be puted into the place of missing digets to length of number
+        """ 
         try:
             value = int(number)
         except ValueError:
@@ -128,23 +157,32 @@ class Ticket():
 
 
 class SerieOfTickets():
-
+    """
+    Class SerieOfTickets that creates list of unique tickets with appropriate length of number
+    Can be set approch to count lucky tickets (by default None) from file and manualy
+    """    
     ticket = Ticket
 
 
     def __init__(self, approach = None, num_len = None):
         self.tickets = {}
-        self.approach = approach
+        self.__approach = approach
         self.num_len = num_len
 
 
     def set_approach(self, name, class_approach = Approach):
+        """
+        Method allows to set manually appropriate class of approach witch base class is Approach
+        """    
         if name in  class_approach.list_of_approach:
-            self.approach = class_approach.list_of_approach[name]
+            self._SerieOfTickets__approach = class_approach.list_of_approach[name]
         else:
             raise CanNotFindApproachException("We can't find approach witch we know")
     
     def set_approach_from_file(self, file):
+        """
+        Method allows to set from file appropriate class of approach witch base class is Approach
+        """  
         check_file_exists(file)
         with open(file) as f:
             for line in f:
@@ -156,25 +194,37 @@ class SerieOfTickets():
                     raise CanNotFindApproachException("We can't find approach witch we know")
 
     def create_serie_from_file(self, file):
+        """
+        Method allows to create from file tickets and add unique tickets to serie list
+        """  
         self.ticket.reset()
         self.tickets = {}
         with open(file) as f:
             data = json.load(f)
         for ticket in data:
+            print(ticket['id'])
             ticket['num_len'] = self.num_len
             self.add(self.ticket(**ticket))
         
 
     def add(self, ticket):
-        if len(ticket.number) == self.num_len:
-            self.tickets[ticket.id] = ticket.number
-        else:
+        """
+        Checks if ticket's id and number unique and add unique ticket to serie list
+        """  
+        if ticket.id  in  self.tickets and ticket.number in self.tickets.values():
+            raise NotValidTicket(f"Trying to add ticket(id = {ticket.id}) with not unique id")
+        elif len(ticket.number) != self.num_len:
             raise NotValidTicket(f"Trying to add ticket(id = {ticket.id}) with unproper number")
-
+        else:
+            self.tickets[ticket.id] = ticket.number
+    
     def count_lucky_tickets(self):
+        """
+        Counts the number of lucky tickets in serie list according to appropriate approach class
+        """  
         count = 0
         for ticket in self.tickets:
-            if self.approach.is_lucky_number(self.tickets.get(ticket)):
+            if self._SerieOfTickets__approach.is_lucky_number(self.tickets.get(ticket)):
                 count += 1
         return count
 
@@ -234,10 +284,10 @@ if __name__ == "__main__":
         print(Ticket.id)
         # print(serie.approach)
         # print('*'*90)
-        # serie.set_approach('Moskow')
-        # print(serie.approach)
+        serie.set_approach('Moskow')
+        print(serie._SerieOfTickets__approach)
         # print(serie.tickets)
-        # print(serie.count_lucky_tickets())
+        print(serie.count_lucky_tickets())
         # print(Approach.list_of_approach)
         # print(serie.tickets)
         # print(serie.approach.is_lucky_number('234162'))

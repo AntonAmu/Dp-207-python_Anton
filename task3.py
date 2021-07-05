@@ -10,7 +10,9 @@ class ValidationException(CustomException):
     pass
 
 class ListOfTriangles(list):
-    
+    """
+    Creates list of triangles with unique names
+    """    
     def __init__(self):
         self.list = []
     
@@ -27,36 +29,50 @@ class ListOfTriangles(list):
         return output
     
 class Triangle():
-
+    """
+    Creates triangles with unique names. The sides of triangles
+    must be possitive integer or float value. 
+    """    
     def __init__(self, name, side_1, side_2, side_3):
         self.side_1 = side_1
         self.side_2 = side_2
         self.side_3 = side_3
         self.name = name
-        Triangle.validate_data(self)
+        self.validate_data()
         self.check_area()
     
     @property
     def area(self):
+        """
+        Calculate by Heron's formula and return area
+        """
         p = (self.side_1 + self.side_2 + self.side_3)*.5
         area = (p*(p - self.side_1)*(p - self.side_2)*(p - self.side_3))**.5
         return area
     
 
     def check_area(self):
+        """
+        Check if the area is complex number or area less or equal to null. 
+        """ 
         if not isinstance(self.area, complex):
-            if self.side_1 <=0 or self.side_2 <= 0 or self.side_3 <= 0 or self.area <= 0:
-                raise NotValidinstanceOfTriangleException('Negative area or side of triangle')
+            if self.area <= 0:
+                raise NotValidinstanceOfTriangleException('Negative area of triangle')
         else:
-            raise NotValidinstanceOfTriangleException('Negative area or side of triangle')
+            raise NotValidinstanceOfTriangleException('Negative area of triangle')
 
-    @classmethod
-    def validate_data(cls, instance):
-        for attr in instance.__dict__:
+    def validate_data(self):
+        """
+        For attribute 'name' return string with the deleted whitespace at the begin and end of the string
+        For sides attributes return integer or float and checks if the value greater than null
+        """ 
+        for attr in self.__dict__:
             if attr == 'name':
-                instance.__dict__[attr] = instance.__dict__[attr].strip()
+                self.__dict__[attr] = self.__dict__[attr].strip()
             else:
-                instance.__dict__[attr] = validate_to_number(instance.__dict__[attr])
+                self.__dict__[attr] = validate_to_number(self.__dict__[attr])
+        if self.side_1 <=0 or self.side_2 <= 0 or self.side_3 <= 0:
+            raise NotValidinstanceOfTriangleException('Negative side of triangle')
 
     def __lt__(self, other):
         if self.area < other.area:
@@ -101,7 +117,7 @@ def create_triangle_from_input():
         side_2 = input("Enter the second side of triangle:")
         side_3 = input("Enter the third side of triangle:")
         return Triangle(name, side_1, side_2, side_3)
-    except ValidationException as e:
+    except CustomException as e:
         print(e.msg)
         if answer_choise('Try again?'):
             return create_triangle_from_input()

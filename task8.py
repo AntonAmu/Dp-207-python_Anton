@@ -13,28 +13,44 @@ class NotPositiveRange(CustomException):
     pass
 
 class PositiveRange():
-
+    """
+    Class PositiveRange takes two arguments integer or float numbers (begin and end)
+    The value of begin must be less or equal value of end
+    """
     def __init__(self, begin, end):
         self.begin = begin
         self.end = end
         self.check_if_positiv()
     
     def get_fibbonachi_range(self):
+        """
+        Return the Fibbonachi's number series for the given range
+        """
         return FibbonachiRange(self.begin, self.end).find_proper_fibbonachi_range()
 
     def check_if_positiv(self):
+        """
+        Checks if the value of begin less or equal value of end
+        """
         if self.end <= self.begin:
             raise NotPositiveRange("Not positive range")
 
 
 class FibbonachiRange():
-
+    """
+    Class FibbonachiRange takes two arguments integer or float numbers (begin and end)
+    The value of begin must be less or equal value of end
+    """
     def __init__(self, begin, end):
         self.range_begin = begin
         self.range_end = end
+        self.check_if_positiv()
     
     @staticmethod
     def find_index_through_value(value):
+        """
+        Find the nearest index of Fibbonachi's number series's digit
+        """
         if value <= 0:
             return 0
         else: 
@@ -46,6 +62,9 @@ class FibbonachiRange():
         
 
     def find_proper_fibbonachi_range(self):
+        """
+        Generate Fibbonachi's number series for the given range
+        """
         index_begin = self.__class__.find_index_through_value(self.range_begin)
         index_end = self.__class__.find_index_through_value(self.range_end)
         if index_begin == 0 and index_end == 0:
@@ -55,8 +74,17 @@ class FibbonachiRange():
     
     @staticmethod
     def fibbonachi_range(index_begin, index_end):
+        """
+        Generate Fibbonachi's number series for the range
+        """
         return (round((((1+5**.5)/2)**i)/(5**0.5)) for i in range(index_begin, index_end))
 
+    def check_if_positiv(self):
+        """
+        Checks if the value of begin less or equal value of end
+        """
+        if self.range_end <= self.range_begin:
+            raise NotPositiveRange("Not positive range")
 
 def main():
     try:

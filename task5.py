@@ -92,7 +92,7 @@ class Number():
         try:
             number = int(parse_data)
             return f"{number}"
-        except ValueError():
+        except ValueError:
             raise NotValiData("Not valid type")
     
     @staticmethod
@@ -233,10 +233,10 @@ def main():
             # print(Number('222'))
             # print(Number('242'))
             # print(Number('401'))
-            print(Number('100330'))
-            print(Number('123356'))
-            print(Number('90000'))
-        except (TooManyHope, NotValiData) as e:
+            print(Number('11'))
+            print(Number('551001'))
+            print(Number('45310'))
+        except (CustomException) as e:
             logging.error(e.msg)
 
 if __name__ == "__main__":

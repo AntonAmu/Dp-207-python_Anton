@@ -64,7 +64,7 @@ def test_add_valid_tickets_toserie(reset_ticket, create_serie_with_four_tickets_
 def test_valid_set_approach_to_serie():
     serie = SerieOfTickets()
     serie.set_approach('Moskow')
-    assert serie.approach in Approach.list_of_approach.values()
+    assert serie._SerieOfTickets__approach in Approach.list_of_approach.values()
 
 def test_set_invalid_approach_to_serie():
     serie = SerieOfTickets()
@@ -84,13 +84,13 @@ def test_count_lucky_tickets_piter(create_serie_with_four_tickets_valid_six_sign
 def test_total_amount_of_lucky_tickets_moskow():
     serie = SerieOfTickets(num_len = 6)
     serie.set_approach('Moskow')
-    assert serie.approach.total_amount_of_lucky_tickets(serie) == 55252
+    assert serie._SerieOfTickets__approach.total_amount_of_lucky_tickets(serie) == 55252
 
 @pytest.mark.skip(reason="too long calculation")
 def test_total_amount_of_lucky_tickets__piter():
     serie = SerieOfTickets(num_len = 6)
     serie.set_approach('Piter')
-    assert serie.approach.total_amount_of_lucky_tickets(serie) == 25081
+    assert serie._SerieOfTickets__approach.total_amount_of_lucky_tickets(serie) == 25081
 
 def test_create_serie_from_file(json_file):
     serie = SerieOfTickets(num_len = 6)
