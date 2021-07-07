@@ -19,12 +19,12 @@ def test_list_of_functionality_range(create_list_of_functionality, range):
 
 def test_valid_possitive_number():
     n = Number('22')
-    assert n.number == '22'
+    assert n.abs_number == '22'
     assert n.sign == '+'
 
 def test_valid_negative_number():
     n = Number('-22')
-    assert n.number == '22'
+    assert n.abs_number == '22'
     assert n.sign == '-'
 
 def test_unvalid_put_to_number_letters():

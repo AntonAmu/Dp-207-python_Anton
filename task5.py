@@ -13,7 +13,9 @@ class NotValiData(CustomException):
     pass
 
 class RepresentNumber():
-
+    """
+    Class RepresentNumber which collects all available languages and representation's numbers's ranges 
+    """
     list_of_functionality = {}
 
     def __init__(self):
@@ -40,7 +42,7 @@ class RepresentNumberRu(RepresentNumber):
         'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать', 'двадцать', 'сорок', 'девяносто']
     list_num = list(range(1, 21)) + [40, 90]
     
-    list_num_str_repr += ['сто', 'двести', 'триста', 'четыриста']
+    list_num_str_repr += ['сто', 'двести', 'триста', 'четыреста']
     list_num += [100, 200, 300, 400]
     
     list_num_str_repr += ['одна', 'две', 'три', 'четыре']
@@ -54,7 +56,10 @@ class RepresentNumberEng(RepresentNumber):
     
 
 class Selector():
-    
+    """
+    Class Selector whitch takes takes two arguments: language (by default 'Rus') and
+    basic class of representation (by default RepresentNumber)
+    """    
     def __init__(self, language = "Rus", basic_class_of_repr = RepresentNumber):
         
         self.language = language
@@ -63,13 +68,18 @@ class Selector():
 
     @property
     def list_of_functionality(self):
+        """
+        Choses all available functionality for appropriate language
+        """   
         if self.basic_class_of_repr.list_of_functionality.get(self.language):
             return self.basic_class_of_repr.list_of_functionality.get(self.language)
         else:
             raise TooManyHope(f"I can't process language such {self.language}")
     
     def within_range(self, number):
-
+        """
+        Checks if appropriate functionality exists for the given number
+        """   
         try:
             key = list(filter((lambda key: number in key), self.list_of_functionality))[0]
             return key
@@ -77,18 +87,26 @@ class Selector():
             raise TooManyHope(f"I can process only numbers from 1 to {max([key.stop for key in self.list_of_functionality])-1}")
     
     def get_proper_str(self, number):
+        """
+        Rerurns function for number's representation 
+        """
         return self.list_of_functionality.get(self.within_range(number))
 
 class Number():
-    
+    """
+    Class Number 
+    """  
     selector = Selector()
 
-    def __init__(self, input):
-        self.number = Number.validate_number(Number.parse_data(input)[1])
-        self.sign = Number.parse_data(input)[0]
+    def __init__(self, number):
+        self.abs_number = Number.validate_number(Number.parse_data(number)[1])
+        self.sign = Number.parse_data(number)[0]
 
     @staticmethod
     def validate_number(parse_data):
+        """
+        Checks if the value is integers else raises NotValiData exception
+        """
         try:
             number = int(parse_data)
             return f"{number}"
@@ -96,23 +114,31 @@ class Number():
             raise NotValiData("Not valid type")
     
     @staticmethod
-    def parse_data(input):
-        if input[0] == '-' or input[0] == '+':
-            parse_data = input[1:]
-            sign = input[0]
+    def parse_data(number):
+        """
+        Parses number from the calling the class constructor
+        """
+        if number[0] == '-' or number[0] == '+':
+            parse_data = number[1:]
+            sign = number[0]
         else:
             sign = '+'
-            parse_data = input
+            parse_data = number
         return sign, parse_data
     
     @property
     def string_repr_of_abs_value(self):
-
-        abs_value = int(self.number)
-        return self.selector.get_proper_str(abs_value)(self.number)
+        """
+        Returns appropriate string representation of number's absolute value
+        """
+        int_abs_value = int(self.abs_number)
+        return self.selector.get_proper_str(int_abs_value)(self.abs_number).strip()
 
 
     def __str__(self):
+        """
+        Returns appropriate string representation of number
+        """
         if self.sign == '-':
             return 'минус ' + self.string_repr_of_abs_value
         else:
@@ -204,7 +230,7 @@ class RepresentNumberFrom_10_000_To_99_999(RepresentNumberFrom_1000_To_9_999):
         elif int(number[:2]) in range(11,20) or number[1] == '0':
             string = f"{RepresentNumberFrom_1_To_99.str(number[:-3]).split()[0]} тысячь {RepresentNumberFrom_100_To_999.str(number[-3:])}"
         else:
-            string = f"{RepresentNumberFrom_1_To_99.str(number[:-3]).split()[0]} {RepresentNumberFrom_1000_To_9_999.str(number[-4:])} " 
+            string = f"{RepresentNumberFrom_1_To_99.str(number[:-3]).split()[0]} {RepresentNumberFrom_1000_To_9_999.str(number[-4:])}" 
      
         return string
     
@@ -220,6 +246,7 @@ class RepresentNumberFrom_100_000_To_999_999(RepresentNumberFrom_10_000_To_99_99
 def main():
 
     RepresentNumber()
+    print(RepresentNumber.list_of_functionality)
     edit_lang = ["Eng", "Fr", "Rus"]
     for lang in edit_lang:
         Number.selector = Selector(lang)
@@ -233,7 +260,7 @@ def main():
             # print(Number('222'))
             # print(Number('242'))
             # print(Number('401'))
-            print(Number('11'))
+            print(Number('333333'))
             print(Number('551001'))
             print(Number('45310'))
         except (CustomException) as e:
