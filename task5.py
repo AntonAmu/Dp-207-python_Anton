@@ -24,10 +24,17 @@ class RepresentNumber():
  
     @classmethod
     def add_language_repr(cls):
+        """
+        Add language to the list of functionality 
+        """
         RepresentNumber.list_of_functionality[cls._language] = {}
     
     @classmethod
     def add_list_of_functionality(cls):
+        """
+        Add language to the list of functionality from the child class and
+        invoke method update_list_of_functionality from child's child classes
+        """
         cls.add_language_repr()
         for sub_cls in cls.__subclasses__():
             sub_cls.update_list_of_functionality()
@@ -35,7 +42,10 @@ class RepresentNumber():
     
 
 class RepresentNumberRu(RepresentNumber):
-
+    """
+    Class RepresentNumberRu which has a privite attribute _language and
+    and dictionary of unique values (number -> number in words)
+    """
     _language = 'Rus'
 
     list_num_str_repr = ['один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одинадцать', 'двенадцать',
@@ -151,6 +161,9 @@ class RepresentNumberFrom_1_To_99(RepresentNumberRu):
     
     @classmethod
     def str(cls, number):
+        """
+        Return number in words for number in appropriate range
+        """
         dict_ = cls._numbers
 
         if len(number) <= 2 and dict_.get(int(number)):
@@ -175,6 +188,10 @@ class RepresentNumberFrom_1_To_99(RepresentNumberRu):
     
     @classmethod
     def update_list_of_functionality(cls):
+        """
+        Add method str to the list of functionality and propagate invokation of the method 
+        to the child class 
+        """
         RepresentNumber.list_of_functionality[cls._language][cls.range_] = cls.str
         for sub_cls in cls.__subclasses__():
             sub_cls.update_list_of_functionality()
@@ -251,16 +268,7 @@ def main():
     for lang in edit_lang:
         Number.selector = Selector(lang)
         try:
-            # print(Number('-22'))
-            # print(Number('2'))
-            # print(Number('33'))
-            # print(Number('44'))
-            # print(Number('66'))
-            # print(Number('106'))
-            # print(Number('222'))
-            # print(Number('242'))
-            # print(Number('401'))
-            print(Number('333333'))
+            print(Number('001'))
             print(Number('551001'))
             print(Number('45310'))
         except (CustomException) as e:

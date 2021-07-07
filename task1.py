@@ -4,10 +4,10 @@ import sys
 class ChessDesk():
     """Create chessdesk appropriate height and width.
     Height and width must be greater or equal null"""
-
     def __init__(self, height, width):
         self.height = height
         self.width = width
+    
     def __str__(self):
         """"Return chessdesk representation"""
         even_row = '* '*self.width
