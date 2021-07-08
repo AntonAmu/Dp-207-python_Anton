@@ -48,9 +48,9 @@ class RepresentNumberRu(RepresentNumber):
     """
     _language = 'Rus'
 
-    list_num_str_repr = ['один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одинадцать', 'двенадцать',
+    list_num_str_repr = ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одинадцать', 'двенадцать',
         'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать', 'двадцать', 'сорок', 'девяносто']
-    list_num = list(range(1, 21)) + [40, 90]
+    list_num = list(range(0, 21)) + [40, 90]
     
     list_num_str_repr += ['сто', 'двести', 'триста', 'четыреста']
     list_num += [100, 200, 300, 400]
@@ -94,7 +94,8 @@ class Selector():
             key = list(filter((lambda key: number in key), self.list_of_functionality))[0]
             return key
         except IndexError:
-            raise TooManyHope(f"I can process only numbers from 1 to {max([key.stop for key in self.list_of_functionality])-1}")
+            limit = max([key.stop for key in self.list_of_functionality])-1
+            raise TooManyHope(f"I can process only numbers from minus {limit} to plus {limit}")
     
     def get_proper_str(self, number):
         """
@@ -157,7 +158,7 @@ class Number():
 
 class RepresentNumberFrom_1_To_99(RepresentNumberRu):
 
-    range_ = range(1, 100)    
+    range_ = range(0, 100)    
     
     @classmethod
     def str(cls, number):
@@ -168,8 +169,6 @@ class RepresentNumberFrom_1_To_99(RepresentNumberRu):
 
         if len(number) <= 2 and dict_.get(int(number)):
             string= dict_.get(int(number))
-        elif number == '00':
-            string = ''
         elif int(number) < 40 and number[1] == '0':
             string = f'{dict_.get(int(number[0]))}дцать'
         elif int(number) < 40 and number[1] != '0':
@@ -204,9 +203,9 @@ class RepresentNumberFrom_100_To_999(RepresentNumberFrom_1_To_99):
     @classmethod
     def str(cls, number):
         dict_ = cls._numbers 
-        if int(number) in dict_:
+        if int(number) in dict_ and int(number) != 0:
             string = f'{dict_.get(int(number))}'
-        elif len(number) == 3 and int(number) == 0:
+        elif len(number) <= 3 and int(number) == 0:
             string = ''
         elif int(number) in range(100, 500):
             string = f"{RepresentNumberFrom_100_To_999.str(str(int(number) - int(number[1:])))} {RepresentNumberFrom_1_To_99.str(number[1:])}"
@@ -270,7 +269,7 @@ def main():
         try:
             print(Number('001'))
             print(Number('551001'))
-            print(Number('45310'))
+            print(Number('1000000'))
         except (CustomException) as e:
             logging.error(e.msg)
 
